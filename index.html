@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Community Japa Counter — Join devotees worldwide in a sacred collective chanting initiative toward 1 Crore!" />
+  <meta name="theme-color" content="#FCFAF7" />
+  <title>Community Japa Counter 🙏 — Collective Chanting Initiative</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📿</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <style>
+    /* ============================================================
+   🕉️ COMMUNITY JAPA COUNTER — Design System
+   Reused from Divine Japa main app
+   ============================================================ */
+    :root {
+      --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+      --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+      --color-bg: #FCFAF7;
+      --color-text: #2D2D2D;
+      --color-heading: #1a1a1a;
+      --color-primary: #FF9933;
+      --color-primary-dark: #e07e1a;
+      --color-surface1: #F5F2ED;
+      --color-surface2: #EAE7E2;
+      --color-danger: #dc2626;
+      --color-success: #16a34a;
+      --radius-sm: 12px;
+      --radius-md: 16px;
+      --radius-lg: 24px;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-serif);
+      background: var(--color-bg);
+      color: var(--color-text);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--color-primary);
+      z-index: 9999;
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--color-bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--color-surface2);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--color-primary);
+    }
+
+    ::selection {
+      background: rgba(255, 153, 51, 0.2);
+    }
+
+    /* Animations */
+    .animate-in {
+      animation: fadeIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes shimmerBar {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    @keyframes confetti-fall {
+      0% {
+        transform: translateY(-30px) rotate(0deg) scale(1);
+        opacity: 1;
+      }
+
+      100% {
+        transform: translateY(100vh) rotate(720deg) scale(0.3);
+        opacity: 0;
+      }
+    }
+
+    @keyframes popIn {
+      0% {
+        transform: scale(0.8);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes countPulse {
+      0% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.08);
+      }
+
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    .celebration-particle {
+      position: fixed;
+      top: -30px;
+      font-size: 24px;
+      pointer-events: none;
+      z-index: 9999;
+      animation: confetti-fall ease-out forwards;
+    }
+
+    /* Navbar */
+    .navbar {
+      padding: 28px 24px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: flex-end;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .nav-brand {
+      font-family: var(--font-serif);
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--color-heading);
+      text-decoration: none;
+      line-height: 1.2;
+      cursor: pointer;
+    }
+
+    .nav-brand .brand-accent {
+      color: var(--color-primary);
+    }
+
+    .nav-subtitle {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      opacity: 0.5;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* Main Content */
+    .main-content {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px 24px 60px;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* Cards */
+    .card {
+      background: white;
+      border: 1px solid var(--color-surface2);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-surface {
+      background: var(--color-surface1);
+    }
+
+    .card-header {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-weight: 700;
+      opacity: 0.55;
+      margin-bottom: 20px;
+    }
+
+    .om-watermark {
+      position: absolute;
+      top: -20px;
+      left: -10px;
+      font-size: 160px;
+      font-weight: 700;
+      color: var(--color-primary);
+      opacity: 0.04;
+      user-select: none;
+      pointer-events: none;
+      font-style: italic;
+      line-height: 1;
+    }
+
+    /* Counter */
+    .counter-section {
+      margin: 10px 0 20px;
+    }
+
+    .counter-value {
+      font-family: var(--font-serif);
+      font-size: 5rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -3px;
+      color: var(--color-heading);
+    }
+
+    .counter-target {
+      font-size: 1.5rem;
+      opacity: 0.25;
+      font-style: italic;
+      margin-left: 12px;
+    }
+
+    .counter-label {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      opacity: 0.5;
+      margin-top: 8px;
+    }
+
+    /* Progress */
+    .progress-bar {
+      width: 100%;
+      height: 2px;
+      background: var(--color-surface2);
+      position: relative;
+      margin: 24px 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--color-primary);
+      transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .progress-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      box-shadow: 0 2px 10px rgba(255, 153, 51, 0.3);
+      position: absolute;
+      top: -6px;
+      transition: left 1s ease-out;
+    }
+
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      margin-top: 8px;
+    }
+
+    .progress-pct {
+      color: var(--color-primary);
+      font-weight: 700;
+    }
+
+    .progress-goal {
+      opacity: 0.5;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      cursor: pointer;
+      transition: var(--transition);
+      white-space: nowrap;
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: var(--color-primary);
+      color: white;
+      box-shadow: 0 2px 12px rgba(255, 153, 51, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: var(--color-primary-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 20px rgba(255, 153, 51, 0.35);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-outline {
+      background: white;
+      color: var(--color-text);
+      border: 1px solid var(--color-surface2);
+    }
+
+    .btn-outline:hover {
+      background: var(--color-surface1);
+      border-color: var(--color-primary);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--color-text);
+      opacity: 0.5;
+      padding: 8px 14px;
+    }
+
+    .btn-ghost:hover {
+      opacity: 1;
+      color: var(--color-primary);
+    }
+
+    .btn-sm {
+      padding: 8px 14px;
+      font-size: 10px;
+    }
+
+    .btn-lg {
+      padding: 16px 32px;
+      font-size: 13px;
+    }
+
+    /* Quick-add buttons grid */
+    .quick-add-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .quick-btn {
+      padding: 18px 8px;
+      border: 2px solid var(--color-surface2);
+      border-radius: var(--radius-sm);
+      background: white;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+      font-family: var(--font-sans);
+    }
+
+    .quick-btn:hover {
+      border-color: var(--color-primary);
+      background: #FFF7ED;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(255, 153, 51, 0.15);
+    }
+
+    .quick-btn:active {
+      transform: scale(0.96);
+    }
+
+    .quick-btn .qb-num {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--color-heading);
+      display: block;
+    }
+
+    .quick-btn .qb-label {
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.5;
+      margin-top: 2px;
+      display: block;
+    }
+
+    /* Custom input row */
+    .custom-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .custom-row input {
+      flex: 1;
+      padding: 14px 20px;
+      background: white;
+      border: 1px solid var(--color-surface2);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      color: var(--color-text);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .custom-row input:focus {
+      border-color: var(--color-primary);
+    }
+
+    .custom-row input::placeholder {
+      color: #aaa;
+    }
+
+    /* Local count display */
+    .local-count-card {
+      background: linear-gradient(135deg, #FFF7ED 0%, #FFFBF5 100%);
+      border: 2px solid var(--color-primary);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .local-count-card::before {
+      content: '📿';
+      position: absolute;
+      top: 6px;
+      right: 12px;
+      font-size: 28px;
+      opacity: 0.15;
+    }
+
+    .local-count-value {
+      font-family: var(--font-serif);
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--color-primary-dark);
+      line-height: 1;
+    }
+
+    .local-count-label {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      opacity: 0.6;
+      margin-top: 6px;
+    }
+
+    /* Name input */
+    .name-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+
+    .name-row input {
+      flex: 1;
+      padding: 10px 16px;
+      background: white;
+      border: 1px solid var(--color-surface2);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      color: var(--color-text);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .name-row input:focus {
+      border-color: var(--color-primary);
+    }
+
+    .name-row label {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.55;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Quotes */
+    .quote-card {
+      background: white;
+      border: 1px solid var(--color-surface2);
+      border-radius: var(--radius-lg);
+      padding: 28px 32px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .quote-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+
+    .quote-body {
+      flex: 1;
+    }
+
+    .quote-text {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 1.08rem;
+      line-height: 1.7;
+      color: var(--color-text);
+    }
+
+    .quote-deity {
+      display: block;
+      font-family: var(--font-sans);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      opacity: 0.45;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+
+    .warning-card {
+      background: #FFFBF0;
+      border: 1px solid #F5E6CC;
+    }
+
+    .gita-quote {
+      font-style: italic;
+      opacity: 0.45;
+      font-size: 0.92rem;
+      text-align: center;
+      max-width: 550px;
+      margin: 0 auto 16px;
+    }
+
+    /* Recent submissions */
+    .recent-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .recent-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--color-surface2);
+      padding: 10px 0;
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+    }
+
+    .recent-item:last-child {
+      border-bottom: none;
+    }
+
+    .count-cell {
+      font-family: var(--font-sans);
+      font-weight: 700;
+      background: var(--color-surface1);
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 20px 0;
+    }
+
+    .stat-card {
+      background: var(--color-surface1);
+      border: 1px solid var(--color-surface2);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: var(--font-serif);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--color-heading);
+    }
+
+    .stat-label {
+      font-family: var(--font-sans);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.5;
+      margin-top: 4px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 14px 22px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      font-weight: 500;
+      z-index: 10000;
+      transform: translateX(120%);
+      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      max-width: 380px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .toast.show {
+      transform: translateX(0);
+    }
+
+    .toast-success {
+      background: white;
+      color: var(--color-text);
+      border: 1px solid var(--color-primary);
+    }
+
+    .toast-error {
+      background: #fef2f2;
+      color: var(--color-danger);
+      border: 1px solid #fecaca;
+    }
+
+    /* Footer */
+    .site-footer {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px 24px 30px;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-sans);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+    }
+
+    .footer-left {
+      opacity: 0.35;
+    }
+
+    /* Admin panel */
+    .admin-panel {
+      background: #FFF7ED;
+      border: 2px dashed var(--color-primary);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin-top: 24px;
+    }
+
+    .admin-panel .card-header {
+      color: var(--color-primary-dark);
+      opacity: 1;
+    }
+
+    .admin-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .admin-row input {
+      flex: 1;
+      min-width: 120px;
+      padding: 10px 16px;
+      border: 1px solid var(--color-surface2);
+      border-radius: var(--radius-sm);
+      font-family: var(--font-sans);
+      font-size: 0.88rem;
+      outline: none;
+    }
+
+    .admin-row input:focus {
+      border-color: var(--color-primary);
+    }
+
+    /* Layout */
+    .home-grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    @media (min-width: 768px) {
+      .home-grid-2col {
+        grid-template-columns: 7fr 5fr;
+      }
+    }
+
+    /* Empty */
+    .empty-msg {
+      text-align: center;
+      opacity: 0.4;
+      font-style: italic;
+      padding: 20px;
+      font-size: 0.92rem;
+    }
+
+    /* Loading skeleton shimmer */
+    .loading-shimmer {
+      background: linear-gradient(90deg, var(--color-surface1) 25%, var(--color-surface2) 50%, var(--color-surface1) 75%);
+      background-size: 200% 100%;
+      animation: shimmerBar 1.5s infinite;
+      border-radius: 6px;
+      display: inline-block;
+    }
+
+    .loading-text {
+      font-family: var(--font-sans);
+      font-size: 0.82rem;
+      opacity: 0.5;
+      font-style: italic;
+    }
+
+    /* Submitting overlay — disables clicker buttons */
+    .submitting .quick-btn,
+    .submitting #btn-add-custom,
+    .submitting #inp-custom {
+      pointer-events: none;
+      opacity: 0.4;
+    }
+
+    /* Admin panel enhancements */
+    .admin-section {
+      border-top: 1px solid rgba(255, 153, 51, 0.2);
+      padding-top: 16px;
+      margin-top: 16px;
+    }
+
+    .admin-section:first-of-type {
+      border-top: none;
+      padding-top: 0;
+      margin-top: 0;
+    }
+
+    .admin-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      margin: 10px 0;
+    }
+
+    .admin-info-item {
+      background: white;
+      border: 1px solid var(--color-surface2);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      text-align: center;
+    }
+
+    .admin-info-val {
+      font-family: var(--font-serif);
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--color-heading);
+    }
+
+    .admin-info-label {
+      font-family: var(--font-sans);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      opacity: 0.5;
+      margin-top: 4px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 20px 16px 12px;
+      }
+
+      .nav-brand {
+        font-size: 1.5rem;
+      }
+
+      .main-content {
+        padding: 16px 16px 40px;
+      }
+
+      .counter-value {
+        font-size: 3.2rem;
+        letter-spacing: -2px;
+      }
+
+      .counter-target {
+        font-size: 1.1rem;
+        display: block;
+        margin-left: 0;
+        margin-top: 4px;
+      }
+
+      .card {
+        padding: 24px 20px;
+      }
+
+      .quote-card {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+
+      .toast {
+        bottom: 16px;
+        right: 16px;
+        left: 16px;
+        max-width: none;
+      }
+
+      .local-count-value {
+        font-size: 2.2rem;
+      }
+
+      .quick-add-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .counter-value {
+        font-size: 2.5rem;
+      }
+
+      .quick-btn .qb-num {
+        font-size: 1.2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+
+  <script>
+    // ============================================================
+    // 🕉️ COMMUNITY JAPA COUNTER — GitHub Pages Edition
+    // Backend: Google Form (write) + Apps Script (read)
+    // ============================================================
+
+    // ============================================================
+    // ⚙️ CONFIGURATION
+    // ============================================================
+    const CONFIG = {
+      // Google Form silent POST URL
+      GOOGLE_FORM_URL: 'https://docs.google.com/forms/d/e/1FAIpQLSfOFeFae10-VvYmyi5dnIgL8B4hJ0fnC8AmmYsWrGC2AicVtg/formResponse',
+
+      // Google Form field entry IDs
+      ENTRY_NAME: 'entry.1589913001',
+      ENTRY_COUNT: 'entry.271084703',
+      ENTRY_TIMESTAMP: 'entry.2016518012',
+
+      // Apps Script web app URL (admin-only actions: setTotal, resetOverride, setConfig, nuke)
+      APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyC4kOMp09P6lif-iHnwwe7Pd6_VRE8VspnXt3pbedq7Y_WhSk6ij0uXYjm95bdGO46Cg/exec',
+
+      // jsDelivr CDN URL — serves data.json pushed by Apps Script cron every 1 min
+      // Format: https://cdn.jsdelivr.net/gh/OWNER/REPO@main/data.json
+      // ⚠️ PLACEHOLDER — replace OWNER and REPO with your GitHub username and repo name
+      CDN_DATA_URL: 'https://cdn.jsdelivr.net/gh/chantjapa-yagna/YOUR_DATA_REPO@main/data.json',
+
+      // App settings
+      GOAL: 10000000, // 1 Crore
+      MAX_PER_SUBMIT: 100000, // 1 Lakh max per submission (anti-cheat)
+      REFRESH_INTERVAL: 30000, // 30 seconds — safe with jsDelivr (truly unlimited CDN)
+    };
+
+    // ============================================================
+    // 📿 QUOTES DATA (reused from Divine Japa main app)
+    // ============================================================
+    const godQuotes = [
+      { text: "Dear child, every chant you do echoes in My universe. I hear each one.", deity: "Krishna", emoji: "💙" },
+      { text: "You think you're chanting My name? Actually, I am calling you closer to Me.", deity: "Krishna", emoji: "🦚" },
+      { text: "That mala you're holding? I blessed every bead before it reached you.", deity: "Krishna", emoji: "📿" },
+      { text: "Wherever you chant, that place becomes Vrindavan to Me.", deity: "Krishna", emoji: "🌸" },
+      { text: "I don't count your chants, dear one. I count the love behind them.", deity: "Krishna", emoji: "💝" },
+      { text: "Every chant you offer plants a seed in eternity's garden. I water them Myself.", deity: "Krishna", emoji: "🌱" },
+      { text: "When you chant in stillness, you sit in My meditation. I protect you always.", deity: "Shiva", emoji: "🔱" },
+      { text: "My third eye sees everything. Right now it sees a beautiful soul doing japa.", deity: "Shiva", emoji: "👁️" },
+      { text: "I am the silence between your chants. In that silence, know that I am always with you.", deity: "Shiva", emoji: "🕉️" },
+      { text: "I walked through forests and crossed oceans — all so that one day, you might call My name.", deity: "Rama", emoji: "🏹" },
+      { text: "Don't worry about perfection. Your effort IS the offering I cherish most.", deity: "Rama", emoji: "🌺" },
+      { text: "Keep chanting. One day you'll realize I was holding your hand all along.", deity: "Hanuman", emoji: "🙏" },
+      { text: "Mountains bow, oceans part — but nothing moves Me like your sincere prayer.", deity: "Hanuman", emoji: "🌊" },
+      { text: "When you chant My name, the whole universe pauses to listen.", deity: "Vishnu", emoji: "🌌" },
+      { text: "I am your Mother. Every time you chant, I wrap you in My divine protection.", deity: "Durga", emoji: "🦁" },
+      { text: "I destroy the darkness so you may chant in the light. Fear nothing, My child.", deity: "Kali", emoji: "🔥" },
+      { text: "True wealth is not gold, dear child. It is the moments you spend in devotion.", deity: "Lakshmi", emoji: "🪷" },
+      { text: "In every chant you speak, I place the rhythm. In every prayer, I guide the words.", deity: "Saraswati", emoji: "🎵" },
+      { text: "I remove the obstacles on your path so your chants may reach the divine unimpeded.", deity: "Ganesh", emoji: "🐘" },
+      { text: "Time is in My hands, but I pause it gladly for one who chants with sincerity.", deity: "Kalbhairav", emoji: "⏳" },
+    ];
+
+    const gitaQuotes = [
+      "Whatever you do, whatever you eat, whatever you offer — do that as an offering to Me. — BG 9.27 🙏",
+      "For one who has conquered the mind, the mind is the best of friends. — BG 6.6 🧘",
+      "Set thy heart upon thy work, but never on its reward. — BG 2.47 ⚡",
+      "I am the beginning, the middle, and the end of all beings. — BG 10.20 🌟",
+      "Whenever dharma declines, I manifest Myself. — BG 4.7 🌅",
+      "Perform your duties without attachment, and you shall attain the Supreme. — BG 3.19 🕊️",
+      "One who sees Me everywhere and sees everything in Me — I am never lost to them. — BG 6.30 🌺",
+      "A person can rise through the efforts of their own mind. — BG 6.5 🚀",
+    ];
+
+    const funnyWarnings = [
+      "🕉️ Don't add wrong count... Rama is watching you with love! 👀",
+      "Hanuman ji is cross-checking your count right now... 🐒",
+      "Lord Krishna played the flute, not the numbers. Be truthful! 🎶",
+      "Your chants go to the divine server. No VPN can hide wrong counts! 🌐",
+      "Reminder: Gods have unlimited RAM. They remember EVERYTHING! 🧠",
+      "This count goes on your cosmic credit score. No pressure! ⭐",
+      "Karma has no deadline. But honesty has instant rewards! ✨",
+      "Dear devotee, the celestial accountants are watching. No creative accounting! 🧮",
+      "If in doubt, chant more! Better than fake counting. Double the benefit! 📿",
+      "Your count is being audited by the Cosmic CA firm — Brahma, Vishnu & Associates! 💼",
+    ];
+
+    const milestoneMessages = {
+      1000: "1,000 chants! The journey of a crore begins with a single bead! 📿",
+      10000: "10,000 chants! The divine vibrations are getting stronger! 🌊",
+      100000: "1 LAKH chants! The heavens are rejoicing right now! 🎉",
+      500000: "5 LAKH! Half a million prayers echoing through the cosmos! 🌌",
+      1000000: "10 LAKH! One million chants! Indra himself is impressed! ⚡",
+      2500000: "25 LAKH! A quarter of the way to 1 Crore! Jai Ho! 🏆",
+      5000000: "50 LAKH! HALFWAY THERE! The dharma is UNSTOPPABLE! 🔥🔥",
+      7500000: "75 LAKH! Three-quarters done! Victory is within sight! 🏁",
+      10000000: "🎯 1 CRORE CHANTS ACHIEVED! JAI SHRI RAM! JAI SHRI KRISHNA! 🏆✨🎉",
+    };
+
+    // ============================================================
+    // HELPERS
+    // ============================================================
+    const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+    function formatIndianNumber(num) {
+      if (num == null || isNaN(num)) return '0';
+      num = Math.floor(num); if (num < 1000) return num.toString();
+      let s = num.toString(), last3 = s.slice(-3), rest = s.slice(0, -3), result = ',' + last3;
+      while (rest.length > 2) { result = ',' + rest.slice(-2) + result; rest = rest.slice(0, -2); }
+      return rest + result;
+    }
+
+    function getTimeGreeting() {
+      const h = new Date().getHours();
+      if (h < 5) return { greeting: "Om Namah Shivaya!", sub: "The Brahma Muhurta hour — most auspicious for Japa! 🌙" };
+      if (h < 8) return { greeting: "Shubh Prabhat!", sub: "Morning devotion fills the day with divine energy! 🌅" };
+      if (h < 12) return { greeting: "Hari Om!", sub: "May your morning be as bright as Surya Dev! ☀️" };
+      if (h < 15) return { greeting: "Radhe Radhe!", sub: "Afternoon japa — the dedication of a true devotee! 🌞" };
+      if (h < 18) return { greeting: "Jai Shri Krishna!", sub: "The golden hour — perfect for connecting with the divine! 🌆" };
+      if (h < 21) return { greeting: "Har Har Mahadev!", sub: "Evening sandhya — the twilight of devotion! 🌇" };
+      return { greeting: "Om Namo Narayanaya!", sub: "Late night Japa carries special blessings! 🌙✨" };
+    }
+
+    function getDeityPrefix(deity) {
+      return ['Durga', 'Kali', 'Lakshmi', 'Saraswati', 'Parvati'].includes(deity) ? 'Maa' : 'Lord';
+    }
+
+    function showToast(msg, type = 'success') {
+      document.querySelector('.toast')?.remove();
+      const t = document.createElement('div');
+      t.className = `toast toast-${type}`;
+      t.innerHTML = `<span>${msg}</span>`;
+      document.body.appendChild(t);
+      requestAnimationFrame(() => t.classList.add('show'));
+      setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 3500);
+    }
+
+    function triggerCelebration() {
+      const items = ['🎉', '🎊', '✨', '🌟', '🏆', '🪷', '🕉'];
+      for (let i = 0; i < 35; i++) {
+        const p = document.createElement('span');
+        p.className = 'celebration-particle';
+        p.textContent = items[Math.floor(Math.random() * items.length)];
+        p.style.left = Math.random() * 100 + '%';
+        p.style.animationDuration = (2.5 + Math.random() * 3) + 's';
+        p.style.animationDelay = Math.random() * 2 + 's';
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 6000);
+      }
+    }
+
+    function animateCounter(el, target, duration = 1200) {
+      const start = parseInt(el.textContent.replace(/,/g, '')) || 0;
+      if (start === target) return;
+      const diff = target - start, t0 = performance.now();
+      (function tick(now) {
+        const p = Math.min((now - t0) / duration, 1);
+        el.textContent = formatIndianNumber(Math.round(start + diff * (1 - Math.pow(1 - p, 3))));
+        if (p < 1) requestAnimationFrame(tick);
+      })(performance.now());
+    }
+
+    // ============================================================
+    // LOCAL STORAGE
+    // ============================================================
+    const STORE = {
+      LOCAL_COUNT: 'communityJapa_localCount',
+      USER_NAME: 'communityJapa_userName',
+      SUBMIT_HISTORY: 'communityJapa_submitHistory',
+    };
+
+    function getLocalCount() { return parseInt(localStorage.getItem(STORE.LOCAL_COUNT)) || 0; }
+    function setLocalCount(v) { localStorage.setItem(STORE.LOCAL_COUNT, v.toString()); }
+    function getUserName() { return localStorage.getItem(STORE.USER_NAME) || ''; }
+    function setUserName(n) { localStorage.setItem(STORE.USER_NAME, n); }
+    function getSubmitHistory() { try { return JSON.parse(localStorage.getItem(STORE.SUBMIT_HISTORY)) || []; } catch (_) { return []; } }
+    function addSubmitHistory(entry) {
+      const h = getSubmitHistory();
+      h.unshift(entry);
+      if (h.length > 20) h.length = 20;
+      localStorage.setItem(STORE.SUBMIT_HISTORY, JSON.stringify(h));
+    }
+
+    // ============================================================
+    // GOOGLE FORM SILENT SUBMIT
+    // ============================================================
+    async function submitToGoogleForm(name, count) {
+      const formData = new FormData();
+      formData.append(CONFIG.ENTRY_NAME, name || 'Sadhak');
+      formData.append(CONFIG.ENTRY_COUNT, count.toString());
+      formData.append(CONFIG.ENTRY_TIMESTAMP, new Date().toISOString());
+
+      try {
+        // mode: 'no-cors' — Google won't return CORS headers,
+        // but the submission still goes through successfully
+        await fetch(CONFIG.GOOGLE_FORM_URL, {
+          method: 'POST',
+          body: formData,
+          mode: 'no-cors',
+        });
+        return true;
+      } catch (e) {
+        console.error('Form submit error:', e);
+        return false;
+      }
+    }
+
+    // ============================================================
+    // DATA FETCHING — jsDelivr CDN Architecture (v4)
+    //
+    // TRULY UNLIMITED + NEAR REAL-TIME:
+    //
+    //   Page load      → jsDelivr CDN (data.json, unlimited)
+    //   Auto-refresh   → jsDelivr CDN (every 30s, unlimited)
+    //   After submit   → Optimistic UI update (instant)
+    //   Admin only     → Apps Script (rare, ~10 calls/day)
+    //
+    //   Sync:  Apps Script cron (every 1 min) → reads Sheet → pushes data.json → GitHub
+    //          → purges jsDelivr cache → fresh data globally in ~30s
+    //
+    // Flow:  Google Form → Sheet → (cron) → GitHub → jsDelivr CDN → 150K users
+    //
+    // Quota proof:
+    //   jsDelivr: 100+ billion req/month capacity (serves npm, react, etc.)
+    //   Apps Script cron: 1,440 URL fetches/day (1/min, under 20K limit)
+    //   GitHub API: 60 pushes/hour (1/min, under 5,000/hour limit)
+    // ============================================================
+    let cachedData = null;
+
+    /**
+     * PRIMARY DATA SOURCE: jsDelivr CDN (data.json pushed by Apps Script cron)
+     * This is the ONLY data source for normal users.
+     * Simple JSON.parse — no CSV parsing needed.
+     * Data updates every ~1 minute (cron) + ~30s (CDN purge propagation).
+     */
+    async function fetchTotalFromCDN() {
+      try {
+        const r = await fetch(CONFIG.CDN_DATA_URL, { cache: 'no-store' });
+        if (!r.ok) throw new Error('CDN fetch failed: ' + r.status);
+        const text = await r.text();
+
+        // Guard: if response looks like HTML (error page), bail out
+        if (text.trim().startsWith('<')) {
+          console.warn('CDN returned HTML (error page), using cached data');
+          return cachedData;
+        }
+
+        const data = JSON.parse(text);
+
+        const cdnTotal = data.total || 0;
+
+        // CORE RULE: Auto-refresh totals can ONLY go up.
+        // If CDN returns lower than cached, it's stale — keep the higher value.
+        // Admin actions (nuke, reset) bypass this via fetchFullDataFromAppsScript().
+        const useTotal = Math.max(cachedData?.total || 0, cdnTotal);
+
+        cachedData = {
+          total: useTotal,
+          formTotal: data.formTotal || 0,
+          override: data.override || 0,
+          goal: data.goal || CONFIG.GOAL,
+          eventName: data.eventName || 'Community Japa',
+          participants: data.participants || 0,
+          totalSubmissions: data.totalSubmissions || 0,
+          recent: cachedData?.recent || [],
+          lastUpdated: data.lastUpdated
+            ? new Date(data.lastUpdated).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+            : '',
+        };
+        return cachedData;
+      } catch (e) {
+        console.error('CDN fetch error:', e);
+        return cachedData || { total: 0, goal: CONFIG.GOAL, recent: [], participants: 0, eventName: 'Community Japa' };
+      }
+    }
+
+    /**
+     * ADMIN ONLY: Apps Script calls. Never used by normal users.
+     * Only called when admin panel actions are triggered.
+     */
+    async function fetchFullDataFromAppsScript() {
+      try {
+        const r = await fetch(CONFIG.APPS_SCRIPT_URL + '?action=getData&t=' + Date.now());
+        if (!r.ok) throw new Error('Apps Script fetch failed');
+        const data = await r.json();
+        cachedData = data;
+        return data;
+      } catch (e) {
+        console.error('Apps Script fetch error:', e);
+        return cachedData || { total: 0, goal: CONFIG.GOAL, recent: [], participants: 0, eventName: 'Community Japa' };
+      }
+    }
+
+    // Admin API functions
+    async function adminSetTotal(code, total) {
+      try {
+        const r = await fetch(CONFIG.APPS_SCRIPT_URL + '?action=setTotal&adminCode=' + encodeURIComponent(code) + '&total=' + total + '&t=' + Date.now());
+        return await r.json();
+      } catch (e) { return { error: 'Network error' }; }
+    }
+
+    async function adminResetOverride(code) {
+      try {
+        const r = await fetch(CONFIG.APPS_SCRIPT_URL + '?action=resetOverride&adminCode=' + encodeURIComponent(code) + '&t=' + Date.now());
+        return await r.json();
+      } catch (e) { return { error: 'Network error' }; }
+    }
+
+    async function adminSetConfig(code, eventName, goal) {
+      let url = CONFIG.APPS_SCRIPT_URL + '?action=setConfig&adminCode=' + encodeURIComponent(code);
+      if (eventName) url += '&eventName=' + encodeURIComponent(eventName);
+      if (goal) url += '&goal=' + goal;
+      url += '&t=' + Date.now();
+      try {
+        const r = await fetch(url);
+        return await r.json();
+      } catch (e) { return { error: 'Network error' }; }
+    }
+
+    function getExportURL(code) {
+      return CONFIG.APPS_SCRIPT_URL + '?action=exportData&adminCode=' + encodeURIComponent(code);
+    }
+
+    async function adminNukeData(code) {
+      try {
+        const r = await fetch(CONFIG.APPS_SCRIPT_URL + '?action=nukeData&adminCode=' + encodeURIComponent(code) + '&confirm=yes&t=' + Date.now());
+        return await r.json();
+      } catch (e) { return { error: 'Network error' }; }
+    }
+
+    function getYourTotalOffered() {
+      return getSubmitHistory().reduce((sum, h) => sum + (h.count || 0), 0);
+    }
+
+    // ============================================================
+    // RENDER APP
+    // ============================================================
+    let refreshTimer = null;
+    let isSubmitting = false; // prevents double-submit + disables clicker during submit
+    let dataLoaded = false;  // tracks if we've fetched real data at least once
+    const isAdmin = new URLSearchParams(window.location.search).has('admin');
+    const app = document.getElementById('app');
+
+    function render() {
+      const localCount = getLocalCount();
+      const gita = rand(gitaQuotes);
+      const god = rand(godQuotes);
+      const warning = rand(funnyWarnings);
+      const timeG = getTimeGreeting();
+      const data = cachedData || { total: 0, goal: CONFIG.GOAL, recent: [], participants: 0, eventName: 'Community Japa' };
+      const pct = Math.min(Math.round((data.total / (data.goal || CONFIG.GOAL)) * 100), 100);
+      const goalReached = data.total >= (data.goal || CONFIG.GOAL);
+      const userName = getUserName();
+      const isLoading = !dataLoaded;
+      const eventName = data.eventName || 'Community Japa';
+      // Split event name for branding: first word normal, rest accented
+      const nameParts = eventName.split(' ');
+      const brandMain = nameParts.length > 1 ? nameParts.slice(0, -1).join(' ') : '';
+      const brandAccent = nameParts.length > 1 ? nameParts[nameParts.length - 1] : eventName;
+
+      app.innerHTML = `<div class="animate-in">
+    <nav class="navbar">
+      <div>
+        <div class="nav-brand">${brandMain ? brandMain + ' ' : ''}<span class="brand-accent">${brandAccent}</span></div>
+        <p class="nav-subtitle">The Collective Chanting Initiative — GitHub Pages Edition</p>
+      </div>
+    </nav>
+
+    <main class="main-content">
+      <p class="gita-quote">${gita}</p>
+
+      <div class="home-grid home-grid-2col">
+        <!-- LEFT: Clicker UI -->
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div class="card card-surface">
+            <p class="card-header">📿 Add Your Chants</p>
+
+            <div class="local-count-card">
+              <div class="local-count-value" id="local-count">${formatIndianNumber(localCount)}</div>
+              <div class="local-count-label">Accumulated (not yet submitted)</div>
+            </div>
+
+            <div class="quick-add-grid">
+              <button class="quick-btn" id="btn-108"><span class="qb-num">+108</span><span class="qb-label">1 Mala</span></button>
+              <button class="quick-btn" id="btn-54"><span class="qb-num">+54</span><span class="qb-label">½ Mala</span></button>
+              <button class="quick-btn" id="btn-27"><span class="qb-num">+27</span><span class="qb-label">¼ Mala</span></button>
+            </div>
+
+            <div class="custom-row">
+              <input type="number" id="inp-custom" min="1" max="100000" placeholder="Custom count..." inputmode="numeric" />
+              <button class="btn btn-outline btn-sm" id="btn-add-custom">+ Add</button>
+            </div>
+
+            <div class="name-row">
+              <label>Your Name</label>
+              <input type="text" id="inp-name" placeholder="Sadhak (optional)" value="${userName}" maxlength="50" />
+            </div>
+
+            <button class="btn btn-primary btn-block btn-lg" id="btn-submit" ${localCount === 0 ? 'disabled' : ''}>
+              🙏 Submit My Count (${formatIndianNumber(localCount)})
+            </button>
+
+            <button class="btn btn-ghost btn-block btn-sm" id="btn-reset" style="margin-top:8px;${localCount === 0 ? 'display:none' : ''}">
+              Reset Local Count
+            </button>
+          </div>
+
+          <div class="quote-card warning-card">
+            <span class="quote-icon">😉</span>
+            <div class="quote-body">
+              <p class="quote-text">"${warning}"</p>
+              <span class="quote-deity">— The Divine Auditor</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Community Progress -->
+        <div style="display:flex;flex-direction:column;gap:20px">
+          <div class="card" style="position:relative">
+            <span class="om-watermark">OM</span>
+            <div style="position:relative;z-index:1">
+              <p class="card-header">Community Progress${isLoading ? ' <span class="loading-text">(loading...)</span>' : ''}</p>
+              <div class="counter-section">
+                ${isLoading
+          ? '<span class="counter-value loading-shimmer" style="width:200px;height:60px">&nbsp;</span>'
+          : `<span class="counter-value" id="total-counter">${formatIndianNumber(data.total)}</span>`
+        }
+                <span class="counter-target">/ ${formatIndianNumber(data.goal || CONFIG.GOAL)}</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width:${pct}%"></div>
+                ${pct > 0 ? `<div class="progress-dot" id="progress-dot" style="left:calc(${pct}% - 7px)"></div>` : ''}
+              </div>
+              <div class="progress-info">
+                <span class="progress-pct" id="progress-pct">${pct}%</span>
+                <span class="progress-goal">Goal: ${formatIndianNumber(data.goal || CONFIG.GOAL)}</span>
+              </div>
+              ${data.lastUpdated ? `<p style="font-size:0.72rem;opacity:0.35;margin-top:8px;font-family:var(--font-sans)">🔄 Last synced: ${data.lastUpdated} &nbsp;·&nbsp; updates every few minutes</p>` : ''}
+              ${goalReached ? '<p style="color:var(--color-primary);font-weight:600;margin-top:16px;font-style:italic">🎯 GOAL ACHIEVED! 🎉</p>' : ''}
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card"><div class="stat-value" id="stat-total">${isLoading ? '...' : formatIndianNumber(data.total)}</div><div class="stat-label">Total Chants</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-participants">${isLoading ? '...' : (data.participants || 0)}</div><div class="stat-label">Devotees</div></div>
+            <div class="stat-card"><div class="stat-value" id="stat-pct">${isLoading ? '...' : pct + '%'}</div><div class="stat-label">Progress</div></div>
+            <div class="stat-card" style="background:linear-gradient(135deg,rgba(255,183,77,0.1),rgba(255,111,0,0.08));border:1px solid rgba(255,183,77,0.2)">
+              <div class="stat-value" style="color:var(--color-primary)">${formatIndianNumber(getYourTotalOffered())}</div>
+              <div class="stat-label">Your Offering ✨</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <p class="card-header">📜 Your Submissions (this device)</p>
+            <div class="recent-list" id="recent-list">
+              ${getSubmitHistory().length > 0 ? getSubmitHistory().map(h => `
+                <div class="recent-item">
+                  <div>
+                    <span>${h.name || 'Sadhak'}</span>
+                    <span style="display:block;font-size:0.75rem;opacity:0.4">${h.time || ''}</span>
+                  </div>
+                  <span class="count-cell">${formatIndianNumber(h.count)}</span>
+                </div>
+              `).join('') : '<p class="empty-msg">No submissions yet. Add chants and submit! 🙏</p>'}
+            </div>
+          </div>
+
+          <div class="card" style="text-align:center;padding:28px">
+            <p class="card-header" style="margin-bottom:12px">${timeG.greeting}</p>
+            <p style="opacity:0.5;font-size:0.92rem;font-style:italic">${timeG.sub}</p>
+          </div>
+
+          <div class="quote-card">
+            <span class="quote-icon">${god.emoji}</span>
+            <div class="quote-body">
+              <p class="quote-text">"${god.text}"</p>
+              <span class="quote-deity">— ${getDeityPrefix(god.deity)} ${god.deity}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- ADMIN PANEL (hidden unless ?admin in URL) -->
+      ${isAdmin ? `
+      <div class="admin-panel" id="admin-panel">
+        <p class="card-header">🔱 Admin Panel</p>
+
+        <div class="admin-section">
+          <p style="font-family:var(--font-sans);font-size:0.82rem;font-weight:600;margin-bottom:8px">📊 Current Stats</p>
+          <div class="admin-info-grid">
+            <div class="admin-info-item">
+              <div class="admin-info-val">${formatIndianNumber(data.total)}</div>
+              <div class="admin-info-label">Total (Combined)</div>
+            </div>
+            <div class="admin-info-item">
+              <div class="admin-info-val">${formatIndianNumber(data.formTotal || 0)}</div>
+              <div class="admin-info-label">Form Submissions</div>
+            </div>
+            <div class="admin-info-item">
+              <div class="admin-info-val">${formatIndianNumber(data.override || 0)}</div>
+              <div class="admin-info-label">Admin Override</div>
+            </div>
+            <div class="admin-info-item">
+              <div class="admin-info-val">${data.participants || 0}</div>
+              <div class="admin-info-label">Unique Devotees</div>
+            </div>
+            <div class="admin-info-item">
+              <div class="admin-info-val">${data.totalSubmissions || 0}</div>
+              <div class="admin-info-label">Total Entries</div>
+            </div>
+            <div class="admin-info-item">
+              <div class="admin-info-val">${pct}%</div>
+              <div class="admin-info-label">Progress</div>
+            </div>
+          </div>
+          <button class="btn btn-outline btn-sm" id="btn-admin-refresh" style="margin-top:8px">🔄 Refresh Data Now</button>
+        </div>
+
+        <div class="admin-section">
+          <p style="font-family:var(--font-sans);font-size:0.82rem;font-weight:600;margin-bottom:4px">✏️ Set Community Total</p>
+          <p style="font-family:var(--font-sans);font-size:0.78rem;opacity:0.5;margin-bottom:10px">
+            Override = desired total − form submissions total.
+          </p>
+          <div class="admin-row">
+            <input type="password" id="inp-admin-code" placeholder="Admin Secret Code" />
+            <input type="number" id="inp-admin-total" placeholder="New Total" min="0" />
+            <button class="btn btn-primary btn-sm" id="btn-admin-set">Set Total</button>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <p style="font-family:var(--font-sans);font-size:0.82rem;font-weight:600;margin-bottom:4px">🗑️ Reset Override to Zero</p>
+          <p style="font-family:var(--font-sans);font-size:0.78rem;opacity:0.5;margin-bottom:10px">
+            Sets admin override = 0. Total becomes form-only submissions.
+          </p>
+          <div class="admin-row">
+            <input type="password" id="inp-admin-reset-code" placeholder="Admin Secret Code" />
+            <button class="btn btn-outline btn-sm" id="btn-admin-reset-override" style="color:var(--color-danger);border-color:var(--color-danger)">Reset Override</button>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <p style="font-family:var(--font-sans);font-size:0.82rem;font-weight:600;margin-bottom:4px">🎯 Event Configuration</p>
+          <p style="font-family:var(--font-sans);font-size:0.78rem;opacity:0.5;margin-bottom:10px">
+            Current event: <strong>${eventName}</strong> | Goal: <strong>${formatIndianNumber(data.goal || CONFIG.GOAL)}</strong>
+          </p>
+          <div class="admin-row">
+            <input type="password" id="inp-admin-config-code" placeholder="Admin Secret Code" />
+            <input type="text" id="inp-admin-event-name" placeholder="Event Name (e.g. Ram Jap)" value="${eventName}" />
+            <input type="number" id="inp-admin-goal" placeholder="Goal" min="1" value="${data.goal || CONFIG.GOAL}" />
+            <button class="btn btn-primary btn-sm" id="btn-admin-set-config">Update Config</button>
+          </div>
+        </div>
+
+        <div class="admin-section">
+          <p style="font-family:var(--font-sans);font-size:0.82rem;font-weight:600;margin-bottom:4px">📥 Download Data</p>
+          <p style="font-family:var(--font-sans);font-size:0.78rem;opacity:0.5;margin-bottom:10px">
+            Export all form submissions as CSV file.
+          </p>
+          <div class="admin-row">
+            <input type="password" id="inp-admin-export-code" placeholder="Admin Secret Code" />
+            <button class="btn btn-outline btn-sm" id="btn-admin-export">📥 Download CSV</button>
+          </div>
+        </div>
+
+        <div class="admin-section" style="border:2px solid rgba(255,0,0,0.3);border-radius:12px;padding:16px">
+          <p style="font-family:var(--font-sans);font-size:0.82rem;font-weight:600;margin-bottom:4px;color:var(--color-danger)">☢️ NUKE DATABASE (Danger Zone)</p>
+          <p style="font-family:var(--font-sans);font-size:0.78rem;opacity:0.5;margin-bottom:10px">
+            Permanently deletes ALL form submissions, resets override to 0. Event name & goal are preserved. <strong>CANNOT be undone!</strong>
+          </p>
+          <div class="admin-row">
+            <input type="password" id="inp-admin-nuke-code" placeholder="Admin Secret Code" />
+            <button class="btn btn-sm" id="btn-admin-nuke" style="background:var(--color-danger);color:white;border:none">☢️ Erase Everything</button>
+          </div>
+        </div>
+
+        <p id="admin-status" style="font-family:var(--font-sans);font-size:0.82rem;margin-top:12px;opacity:0.6"></p>
+      </div>` : ''}
+    </main>
+
+    <footer class="site-footer">
+      <span class="footer-left">Satyam Shivam Sundaram</span>
+      <span class="footer-left">Auto-refreshes · Powered by Google Sheets CDN (unlimited reads)</span>
+    </footer>
+  </div>`;
+
+      attachListeners();
+    }
+
+    // ============================================================
+    // EVENT LISTENERS
+    // ============================================================
+    function attachListeners() {
+      const addToLocal = (n) => {
+        const current = getLocalCount();
+        const newVal = current + n;
+        setLocalCount(newVal);
+        updateLocalUI(newVal);
+
+        // Pulse animation
+        const el = document.getElementById('local-count');
+        if (el) { el.style.animation = 'none'; el.offsetHeight; el.style.animation = 'countPulse 0.3s ease'; }
+
+        // Check milestones
+        for (const [threshold, msg] of Object.entries(milestoneMessages)) {
+          if (current < Number(threshold) && newVal >= Number(threshold)) {
+            showToast(msg); triggerCelebration(); break;
+          }
+        }
+      };
+
+      document.getElementById('btn-108')?.addEventListener('click', () => addToLocal(108));
+      document.getElementById('btn-54')?.addEventListener('click', () => addToLocal(54));
+      document.getElementById('btn-27')?.addEventListener('click', () => addToLocal(27));
+
+      document.getElementById('btn-add-custom')?.addEventListener('click', () => {
+        const inp = document.getElementById('inp-custom');
+        const v = parseInt(inp.value);
+        if (!v || v <= 0) { showToast('Enter a valid number 🙏', 'error'); return; }
+        if (v > CONFIG.MAX_PER_SUBMIT) { showToast(`Maximum ${formatIndianNumber(CONFIG.MAX_PER_SUBMIT)} per entry! 😄`, 'error'); return; }
+        addToLocal(v);
+        inp.value = '';
+      });
+
+      // Enter key on custom input
+      document.getElementById('inp-custom')?.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') { e.preventDefault(); document.getElementById('btn-add-custom')?.click(); }
+      });
+
+      // Save name on change
+      document.getElementById('inp-name')?.addEventListener('input', (e) => {
+        setUserName(e.target.value.trim());
+      });
+
+      // Submit
+      document.getElementById('btn-submit')?.addEventListener('click', async () => {
+        if (isSubmitting) return; // prevent double-click
+        const count = getLocalCount();
+        if (count <= 0) { showToast('Add some chants first! 📿', 'error'); return; }
+        if (count > CONFIG.MAX_PER_SUBMIT) { showToast(`Maximum ${formatIndianNumber(CONFIG.MAX_PER_SUBMIT)} per submission!`, 'error'); return; }
+
+        isSubmitting = true;
+        const btn = document.getElementById('btn-submit');
+        const card = btn?.closest('.card');
+        btn.disabled = true;
+        btn.textContent = '🙏 Offering to the Divine...';
+        if (card) card.classList.add('submitting'); // dims the quick-add buttons
+
+        const name = getUserName() || 'Sadhak';
+        const ok = await submitToGoogleForm(name, count);
+
+        if (ok) {
+          addSubmitHistory({ count, time: new Date().toLocaleString('en-IN'), name });
+          setLocalCount(0);
+          triggerCelebration();
+          const q = rand(godQuotes);
+          showToast(`${formatIndianNumber(count)} chants offered! ${q.emoji} — ${getDeityPrefix(q.deity)} ${q.deity} blesses you!`);
+
+          // OPTIMISTIC UI: immediately show the updated total (no Apps Script call!)
+          // The CSV auto-refresh is protected for 10s to not clobber this value
+          if (cachedData) {
+            cachedData.total = (cachedData.total || 0) + count;
+          }
+          lastOptimisticTime = Date.now(); // protect from stale CSV for 10s
+          isSubmitting = false;
+          render();
+        } else {
+          isSubmitting = false;
+          showToast('Submission may have failed. Try again? 🙏', 'error');
+          btn.disabled = false;
+          btn.textContent = `🙏 Submit My Count (${formatIndianNumber(count)})`;
+          if (card) card.classList.remove('submitting');
+        }
+      });
+
+      // Reset
+      document.getElementById('btn-reset')?.addEventListener('click', () => {
+        if (confirm('Reset your accumulated local count to 0?')) {
+          setLocalCount(0);
+          updateLocalUI(0);
+          showToast('Local count reset! 🔄');
+        }
+      });
+
+      // Admin — Set Total
+      document.getElementById('btn-admin-set')?.addEventListener('click', async () => {
+        const code = document.getElementById('inp-admin-code')?.value;
+        const total = parseInt(document.getElementById('inp-admin-total')?.value);
+        const status = document.getElementById('admin-status');
+        if (!code) { showToast('Enter admin code', 'error'); return; }
+        if (isNaN(total) || total < 0) { showToast('Enter valid total', 'error'); return; }
+        if (status) status.textContent = '⏳ Setting total...';
+        const result = await adminSetTotal(code, total);
+        if (result.error) {
+          if (status) status.textContent = '❌ ' + result.error;
+          showToast(result.error, 'error');
+        } else {
+          if (status) status.textContent = '✅ Total: ' + formatIndianNumber(result.total) + ' (override: ' + formatIndianNumber(result.override) + ')';
+          showToast('Total updated! 🙏');
+          await fetchFullDataFromAppsScript();
+          render();
+        }
+      });
+
+      // Admin — Reset Override (calls dedicated endpoint)
+      document.getElementById('btn-admin-reset-override')?.addEventListener('click', async () => {
+        const code = document.getElementById('inp-admin-reset-code')?.value;
+        const status = document.getElementById('admin-status');
+        if (!code) { showToast('Enter admin code', 'error'); return; }
+        if (!confirm('Reset admin override to 0? Total will become form-only submissions.')) return;
+        if (status) status.textContent = '⏳ Resetting override...';
+        const result = await adminResetOverride(code);
+        if (result.error) {
+          if (status) status.textContent = '❌ ' + result.error;
+          showToast(result.error, 'error');
+        } else {
+          if (status) status.textContent = '✅ Override reset! Total now: ' + formatIndianNumber(result.formTotal);
+          showToast('Override reset to 0! 🔄');
+          await fetchFullDataFromAppsScript();
+          render();
+        }
+      });
+
+      // Admin — Set Config (event name + goal)
+      document.getElementById('btn-admin-set-config')?.addEventListener('click', async () => {
+        const code = document.getElementById('inp-admin-config-code')?.value;
+        const eventName = document.getElementById('inp-admin-event-name')?.value;
+        const goal = document.getElementById('inp-admin-goal')?.value;
+        const status = document.getElementById('admin-status');
+        if (!code) { showToast('Enter admin code', 'error'); return; }
+        if (!eventName && !goal) { showToast('Enter event name or goal', 'error'); return; }
+        if (status) status.textContent = '⏳ Updating config...';
+        const result = await adminSetConfig(code, eventName, goal);
+        if (result.error) {
+          if (status) status.textContent = '❌ ' + result.error;
+          showToast(result.error, 'error');
+        } else {
+          if (status) status.textContent = '✅ Event: ' + result.eventName + ' | Goal: ' + formatIndianNumber(result.goal);
+          showToast('Config updated! Page will refresh... 🙏');
+          await fetchFullDataFromAppsScript();
+          render();
+        }
+      });
+
+      // Admin — Download Data
+      document.getElementById('btn-admin-export')?.addEventListener('click', () => {
+        const code = document.getElementById('inp-admin-export-code')?.value;
+        if (!code) { showToast('Enter admin code', 'error'); return; }
+        const url = getExportURL(code);
+        window.open(url, '_blank');
+        showToast('Download started... 📥');
+      });
+
+      // Admin — Refresh Data
+      document.getElementById('btn-admin-refresh')?.addEventListener('click', async () => {
+        const status = document.getElementById('admin-status');
+        if (status) status.textContent = '⏳ Refreshing...';
+        await fetchFullDataFromAppsScript();
+        render();
+        showToast('Data refreshed! 🔄');
+      });
+
+      // Admin — Nuke Database
+      document.getElementById('btn-admin-nuke')?.addEventListener('click', async () => {
+        const code = document.getElementById('inp-admin-nuke-code')?.value;
+        const status = document.getElementById('admin-status');
+        if (!code) { showToast('Enter admin code', 'error'); return; }
+        // Double confirmation
+        if (!confirm('⚠️ DANGER: This will permanently delete ALL submissions and reset the total to 0. This CANNOT be undone!\n\nAre you absolutely sure?')) return;
+        const typed = prompt('Type "ERASE ALL" to confirm:');
+        if (typed !== 'ERASE ALL') { showToast('Cancelled. You must type exactly "ERASE ALL"', 'error'); return; }
+        if (status) status.textContent = '⏳ Nuking database...';
+        const result = await adminNukeData(code);
+        if (result.error) {
+          if (status) status.textContent = '❌ ' + result.error;
+          showToast(result.error, 'error');
+        } else {
+          if (status) status.textContent = '✅ ' + result.message;
+          showToast('Database erased! ☢️');
+          await fetchFullDataFromAppsScript();
+          render();
+        }
+      });
+    }
+
+    function updateLocalUI(count) {
+      const el = document.getElementById('local-count');
+      if (el) el.textContent = formatIndianNumber(count);
+      const btn = document.getElementById('btn-submit');
+      if (btn) {
+        btn.disabled = count === 0;
+        btn.textContent = `🙏 Submit My Count (${formatIndianNumber(count)})`;
+      }
+      const resetBtn = document.getElementById('btn-reset');
+      if (resetBtn) resetBtn.style.display = count === 0 ? 'none' : '';
+    }
+
+    // ============================================================
+    // AUTO-REFRESH community data
+    // ============================================================
+    function updateCommunityUI(data) {
+      const pct = Math.min(Math.round((data.total / data.goal) * 100), 100);
+      const el = document.getElementById('total-counter');
+      if (el) animateCounter(el, data.total, 800);
+      const f = document.getElementById('progress-fill');
+      if (f) f.style.width = pct + '%';
+      const p = document.getElementById('progress-pct');
+      if (p) p.textContent = pct + '%';
+      const d = document.getElementById('progress-dot');
+      if (d) d.style.left = `calc(${pct}% - 7px)`;
+      const st = document.getElementById('stat-total');
+      if (st) animateCounter(st, data.total, 800);
+      const sp = document.getElementById('stat-participants');
+      if (sp) sp.textContent = data.participants || 0;
+      const spc = document.getElementById('stat-pct');
+      if (spc) spc.textContent = pct + '%';
+    }
+
+    function startAutoRefresh() {
+      if (refreshTimer) clearInterval(refreshTimer);
+      // AUTO-REFRESH uses jsDelivr CDN — truly unlimited reads
+      refreshTimer = setInterval(async () => {
+        const data = await fetchTotalFromCDN();
+        if (data) updateCommunityUI(data);
+      }, CONFIG.REFRESH_INTERVAL);
+    }
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    (async function init() {
+      // Render immediately with loading shimmer (dataLoaded = false)
+      render();
+
+      // Fetch data from jsDelivr CDN (unlimited, near real-time)
+      const data = await fetchTotalFromCDN();
+      dataLoaded = true; // removes loading shimmer on next render
+      if (data) updateCommunityUI(data);
+
+      // Re-render with real data
+      render();
+
+      // Start auto-refresh via jsDelivr CDN (unlimited)
+      startAutoRefresh();
+    })();
+  </script>
+</body>
+
+</html>
