@@ -939,15 +939,17 @@
       // Apps Script web app URL (admin-only actions: setTotal, resetOverride, setConfig, nuke)
       APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyC4kOMp09P6lif-iHnwwe7Pd6_VRE8VspnXt3pbedq7Y_WhSk6ij0uXYjm95bdGO46Cg/exec',
 
-      // jsDelivr CDN URL — serves data.json pushed by Apps Script cron every 1 min
-      // Format: https://cdn.jsdelivr.net/gh/OWNER/REPO@main/data.json
-      // ⚠️ PLACEHOLDER — replace OWNER and REPO with your GitHub username and repo name
-      CDN_DATA_URL: 'https://cdn.jsdelivr.net/gh/chantjapa-yagna/japa-data@main/data.json',
+      // CDN URLs for data.json (pushed by Apps Script cron every 1 min)
+      // Primary: Statically.io — free CDN designed for GitHub files at scale
+      // Fallback: raw.githubusercontent.com — Fastly CDN, ~5 min cache
+      // ⚠️ Do NOT add cache-buster query params — they defeat CDN caching for 150K users
+      CDN_PRIMARY_URL: 'https://cdn.statically.io/gh/chantjapa-yagna/japa-data/main/data.json',
+      CDN_FALLBACK_URL: 'https://raw.githubusercontent.com/chantjapa-yagna/japa-data/main/data.json',
 
       // App settings
       GOAL: 10000000, // 1 Crore
       MAX_PER_SUBMIT: 100000, // 1 Lakh max per submission (anti-cheat)
-      REFRESH_INTERVAL: 30000, // 30 seconds — safe with jsDelivr (truly unlimited CDN)
+      REFRESH_INTERVAL: 15000, // 15 seconds — safe at scale (CDN handles it)
     };
 
     // ============================================================
@@ -1121,46 +1123,56 @@
     }
 
     // ============================================================
-    // DATA FETCHING — jsDelivr CDN Architecture (v4)
+    // DATA FETCHING — GitHub Raw + Fastly CDN Architecture (v4)
     //
     // TRULY UNLIMITED + NEAR REAL-TIME:
     //
-    //   Page load      → jsDelivr CDN (data.json, unlimited)
-    //   Auto-refresh   → jsDelivr CDN (every 30s, unlimited)
+    //   Page load      → raw.githubusercontent.com (Fastly CDN, unlimited)
+    //   Auto-refresh   → raw.githubusercontent.com (every 15s, cached ~5 min)
     //   After submit   → Optimistic UI update (instant)
     //   Admin only     → Apps Script (rare, ~10 calls/day)
     //
     //   Sync:  Apps Script cron (every 1 min) → reads Sheet → pushes data.json → GitHub
-    //          → purges jsDelivr cache → fresh data globally in ~30s
+    //   CDN:   raw.githubusercontent.com uses Fastly CDN, ~5 min cache, no purge needed
     //
-    // Flow:  Google Form → Sheet → (cron) → GitHub → jsDelivr CDN → 150K users
+    // Flow:  Google Form → Sheet → (cron) → GitHub → Fastly CDN → 150K users
     //
     // Quota proof:
-    //   jsDelivr: 100+ billion req/month capacity (serves npm, react, etc.)
+    //   Fastly CDN: unlimited cached reads (serves GitHub, npm, etc.)
     //   Apps Script cron: 1,440 URL fetches/day (1/min, under 20K limit)
     //   GitHub API: 60 pushes/hour (1/min, under 5,000/hour limit)
     // ============================================================
     let cachedData = null;
 
     /**
-     * PRIMARY DATA SOURCE: jsDelivr CDN (data.json pushed by Apps Script cron)
-     * This is the ONLY data source for normal users.
+     * PRIMARY DATA SOURCE: CDN-served data.json (pushed by Apps Script cron every 1 min)
+     * Uses fallback chain: Statically.io → raw.githubusercontent.com → cached data
      * Simple JSON.parse — no CSV parsing needed.
-     * Data updates every ~1 minute (cron) + ~30s (CDN purge propagation).
      */
+
+    // Helper: fetch JSON from a URL, return parsed data or null
+    async function tryFetchJSON(url) {
+      try {
+        const r = await fetch(url, { cache: 'no-store' });
+        if (!r.ok) return null;
+        const text = await r.text();
+        if (text.trim().startsWith('<')) return null; // HTML error page
+        return JSON.parse(text);
+      } catch (e) { return null; }
+    }
+
     async function fetchTotalFromCDN() {
       try {
-        const r = await fetch(CONFIG.CDN_DATA_URL, { cache: 'no-store' });
-        if (!r.ok) throw new Error('CDN fetch failed: ' + r.status);
-        const text = await r.text();
-
-        // Guard: if response looks like HTML (error page), bail out
-        if (text.trim().startsWith('<')) {
-          console.warn('CDN returned HTML (error page), using cached data');
+        // Try primary CDN (Statically.io), then fallback (raw.githubusercontent.com)
+        let data = await tryFetchJSON(CONFIG.CDN_PRIMARY_URL);
+        if (!data) {
+          console.warn('Primary CDN failed, trying fallback...');
+          data = await tryFetchJSON(CONFIG.CDN_FALLBACK_URL);
+        }
+        if (!data) {
+          console.warn('Both CDNs failed, using cached data');
           return cachedData;
         }
-
-        const data = JSON.parse(text);
 
         const cdnTotal = data.total || 0;
 
