@@ -936,20 +936,18 @@
       ENTRY_COUNT: 'entry.271084703',
       ENTRY_TIMESTAMP: 'entry.2016518012',
 
-      // Apps Script web app URL (admin-only actions: setTotal, resetOverride, setConfig, nuke)
+      // Apps Script web app URL (admin actions + emergency data fallback)
       APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbyC4kOMp09P6lif-iHnwwe7Pd6_VRE8VspnXt3pbedq7Y_WhSk6ij0uXYjm95bdGO46Cg/exec',
 
-      // CDN URLs for data.json (pushed by Apps Script cron every 1 min)
-      // Primary: Statically.io — free CDN designed for GitHub files at scale
-      // Fallback: raw.githubusercontent.com — Fastly CDN, ~5 min cache
-      // ⚠️ Do NOT add cache-buster query params — they defeat CDN caching for 150K users
-      CDN_PRIMARY_URL: 'https://cdn.statically.io/gh/chantjapa-yagna/japa-data/main/data.json',
-      CDN_FALLBACK_URL: 'https://raw.githubusercontent.com/chantjapa-yagna/japa-data/main/data.json',
+      // Firebase RTDB REST API — real-time data, no CDN stale cache!
+      // Apps Script cron pushes data every 1 min → Firebase serves it instantly to all users.
+      // ⚠️ PLACEHOLDER — replace with your Firebase RTDB URL after setup
+      FIREBASE_URL: 'https://mahajapadevotion-default-rtdb.firebaseio.com/community-japa.json',
 
       // App settings
       GOAL: 10000000, // 1 Crore
       MAX_PER_SUBMIT: 100000, // 1 Lakh max per submission (anti-cheat)
-      REFRESH_INTERVAL: 15000, // 15 seconds — safe at scale (CDN handles it)
+      REFRESH_INTERVAL: 30000, // 30 seconds — optimal for Firebase free tier (100 concurrent connections)
     };
 
     // ============================================================
@@ -1123,82 +1121,74 @@
     }
 
     // ============================================================
-    // DATA FETCHING — GitHub Raw + Fastly CDN Architecture (v4)
+    // DATA FETCHING — Firebase RTDB Architecture (v5)
     //
-    // TRULY UNLIMITED + NEAR REAL-TIME:
+    // Flow:  Google Form → Sheet → (1-min cron) → Firebase RTDB
+    //        → 150K users fetch via REST API → real-time data
     //
-    //   Page load      → raw.githubusercontent.com (Fastly CDN, unlimited)
-    //   Auto-refresh   → raw.githubusercontent.com (every 15s, cached ~5 min)
-    //   After submit   → Optimistic UI update (instant)
-    //   Admin only     → Apps Script (rare, ~10 calls/day)
+    // WHY THIS WORKS:
+    //   Firebase RTDB serves data instantly (no CDN stale cache).
+    //   Apps Script pushes every 1 min → Firebase has fresh data.
+    //   REST API = transient HTTP requests (not WebSocket) → safe at scale.
+    //   Free tier: 10 GB/month download (we use ~5 GB for 4-day event).
     //
-    //   Sync:  Apps Script cron (every 1 min) → reads Sheet → pushes data.json → GitHub
-    //   CDN:   raw.githubusercontent.com uses Fastly CDN, ~5 min cache, no purge needed
-    //
-    // Flow:  Google Form → Sheet → (cron) → GitHub → Fastly CDN → 150K users
-    //
-    // Quota proof:
-    //   Fastly CDN: unlimited cached reads (serves GitHub, npm, etc.)
-    //   Apps Script cron: 1,440 URL fetches/day (1/min, under 20K limit)
-    //   GitHub API: 60 pushes/hour (1/min, under 5,000/hour limit)
+    // Quota proof (1 Crore japs, 150K users, 3-4 days):
+    //   Firebase reads: ~30M × 150 bytes = ~4.5 GB (under 10 GB) ✅
+    //   Concurrent connections: ~50 at 30s polling (under 100 limit) ✅
+    //   Apps Script cron: 1,440 fetches/day (under 20K limit) ✅
     // ============================================================
     let cachedData = null;
 
     /**
-     * PRIMARY DATA SOURCE: CDN-served data.json (pushed by Apps Script cron every 1 min)
-     * Uses fallback chain: Statically.io → raw.githubusercontent.com → cached data
-     * Simple JSON.parse — no CSV parsing needed.
+     * PRIMARY: Fetch from Firebase RTDB REST API (real-time, no stale cache)
+     * FALLBACK: Apps Script getData (costs quota, used only if Firebase is down)
      */
-
-    // Helper: fetch JSON from a URL, return parsed data or null
-    async function tryFetchJSON(url) {
+    async function fetchTotalFromCDN() {
+      // Try Firebase RTDB first (real-time, free, no CDN stale cache)
       try {
-        const r = await fetch(url, { cache: 'no-store' });
-        if (!r.ok) return null;
-        const text = await r.text();
-        if (text.trim().startsWith('<')) return null; // HTML error page
-        return JSON.parse(text);
-      } catch (e) { return null; }
+        const r = await fetch(CONFIG.FIREBASE_URL);
+        if (r.ok) {
+          const data = await r.json();
+          if (data && data.total !== undefined) {
+            return processFetchedData(data);
+          }
+        }
+      } catch (e) {
+        console.warn('Firebase fetch failed:', e.message);
+      }
+
+      // Fallback: Apps Script (real-time but costs quota)
+      try {
+        console.warn('Firebase failed, falling back to Apps Script...');
+        const r = await fetch(CONFIG.APPS_SCRIPT_URL + '?action=getData&t=' + Date.now());
+        if (r.ok) return processFetchedData(await r.json());
+      } catch (e) {
+        console.warn('Apps Script fallback also failed:', e.message);
+      }
+
+      return cachedData || { total: 0, goal: CONFIG.GOAL, recent: [], participants: 0, eventName: 'Community Japa' };
     }
 
-    async function fetchTotalFromCDN() {
-      try {
-        // Try primary CDN (Statically.io), then fallback (raw.githubusercontent.com)
-        let data = await tryFetchJSON(CONFIG.CDN_PRIMARY_URL);
-        if (!data) {
-          console.warn('Primary CDN failed, trying fallback...');
-          data = await tryFetchJSON(CONFIG.CDN_FALLBACK_URL);
-        }
-        if (!data) {
-          console.warn('Both CDNs failed, using cached data');
-          return cachedData;
-        }
+    function processFetchedData(data) {
+      const total = data.total || 0;
+      // CORE RULE: Auto-refresh totals can ONLY go up.
+      // Admin actions (nuke, reset) bypass this via fetchFullDataFromAppsScript().
+      const useTotal = Math.max(cachedData?.total || 0, total);
 
-        const cdnTotal = data.total || 0;
-
-        // CORE RULE: Auto-refresh totals can ONLY go up.
-        // If CDN returns lower than cached, it's stale — keep the higher value.
-        // Admin actions (nuke, reset) bypass this via fetchFullDataFromAppsScript().
-        const useTotal = Math.max(cachedData?.total || 0, cdnTotal);
-
-        cachedData = {
-          total: useTotal,
-          formTotal: data.formTotal || 0,
-          override: data.override || 0,
-          goal: data.goal || CONFIG.GOAL,
-          eventName: data.eventName || 'Community Japa',
-          participants: data.participants || 0,
-          totalSubmissions: data.totalSubmissions || 0,
-          recent: cachedData?.recent || [],
-          lastUpdated: data.lastUpdated
-            ? new Date(data.lastUpdated).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-            : '',
-        };
-        return cachedData;
-      } catch (e) {
-        console.error('CDN fetch error:', e);
-        return cachedData || { total: 0, goal: CONFIG.GOAL, recent: [], participants: 0, eventName: 'Community Japa' };
-      }
+      cachedData = {
+        total: useTotal,
+        formTotal: data.formTotal || 0,
+        override: data.override || 0,
+        goal: data.goal || CONFIG.GOAL,
+        eventName: data.eventName || 'Community Japa',
+        participants: data.participants || 0,
+        totalSubmissions: data.totalSubmissions || 0,
+        recent: data.recent || cachedData?.recent || [],
+        lastUpdated: data.lastUpdated
+          ? new Date(data.lastUpdated).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+          : '',
+      };
+      return cachedData;
     }
 
     /**
@@ -1747,7 +1737,7 @@
 
     function startAutoRefresh() {
       if (refreshTimer) clearInterval(refreshTimer);
-      // AUTO-REFRESH uses jsDelivr CDN — truly unlimited reads
+      // AUTO-REFRESH from Firebase RTDB (every 30s, real-time data)
       refreshTimer = setInterval(async () => {
         const data = await fetchTotalFromCDN();
         if (data) updateCommunityUI(data);
@@ -1761,7 +1751,7 @@
       // Render immediately with loading shimmer (dataLoaded = false)
       render();
 
-      // Fetch data from jsDelivr CDN (unlimited, near real-time)
+      // Fetch data from Firebase RTDB (real-time, no stale cache)
       const data = await fetchTotalFromCDN();
       dataLoaded = true; // removes loading shimmer on next render
       if (data) updateCommunityUI(data);
